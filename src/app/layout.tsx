@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-Bg">
-        <section className="flex space-x-10 items-center justify-center w-full">
+        <section className="flex space-x-10 items-center justify-center w-full mb-4">
           <nav className="pt-5 flex items-center space-x-3 text-navBorder ml-20">
             <div className="flex items-center space-x-3">
               <h1 className="text-3xl font-bold">Kasemall</h1>
