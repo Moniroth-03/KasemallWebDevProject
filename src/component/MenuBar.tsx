@@ -1,34 +1,30 @@
 "use client";
+import { useState } from "react";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { FaChevronRight } from "react-icons/fa";
-import { useState } from "react";
+import React from "react";
 
 const MenuBar = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  const toggleDropdown = (type: string) => {
-    setActiveDropdown(activeDropdown === type ? null : type);
+  // Toggle dropdown for main menu items
+  const toggleDropdown = (menu: string) => {
+    setActiveDropdown(activeDropdown === menu ? null : menu);
   };
 
+  // Select category to open sub-dropdown
   const selectCategory = (category: string) => {
     setSelectedCategory(selectedCategory === category ? null : category);
   };
 
+  // Dummy sub-dropdown content based on selected category
   const subDropdownContent = (category: string) => {
     switch (category) {
       case "Fruits":
-        return ["Apple", "Banana", "Orange"];
+        return ["Apples", "Bananas", "Oranges"];
       case "Vegetables":
-        return ["Carrot", "Broccoli", "Potato"];
-      case "Meat":
-        return ["Beef", "Chicken", "Pork"];
-      case "Fishes":
-        return ["Salmon", "Tuna", "Trout"];
-      case "Seafood":
-        return ["Shrimp", "Crab", "Lobster"];
-      case "Rice":
-        return ["Romdoul", "Jasmine", "Pka Mlis"];
+        return ["Carrots", "Broccoli", "Spinach"];
       default:
         return [];
     }
@@ -39,6 +35,7 @@ const MenuBar = () => {
       <p className="font-medium mt-10 mb-4">
         Welcome to Kasemall.com, You can buy product here.
       </p>
+
       {/* Selected Filters */}
       <div className="flex flex-wrap gap-2 mb-4">
         <div className="bg-green-200 rounded-full px-4 py-1">
@@ -51,19 +48,21 @@ const MenuBar = () => {
           Kampot <button className="ml-2 text-red-500">&times;</button>
         </div>
       </div>
-      <div className="ml-64 mt-6 flex flex-wrap gap-4 ">
+
+      <div className="ml-64 mt-6 flex flex-wrap gap-4">
         {["All Products", "All Shops", "All Marts"].map((menu, index) => (
           <div key={index} className="relative">
             <button
               type="button"
               onClick={() => toggleDropdown(menu)}
-              className="flex items-center justify-center bg-gray-400 rounded-lg p-2 font-bold w-64 h-16 text-black group-hover:text-white hover:bg-navBg"
+              className="flex items-center justify-center bg-gray-400 rounded-lg p-2 font-bold w-64 h-16 text-black hover:text-white hover:bg-gray-500"
             >
               {menu}
               <TiArrowSortedDown className="ml-2" />
             </button>
+
             {activeDropdown === menu && (
-              <div className="shadow-2xl absolute w-44 bg-white rounded-2xl z-10">
+              <div className="shadow-2xl absolute w-44 bg-white rounded-2xl z-50">
                 <ul className="py-4 text-base font-medium text-gray-700">
                   {[
                     "Fruits",
@@ -84,6 +83,8 @@ const MenuBar = () => {
                           <FaChevronRight className="text-gray-500" />
                         )}
                       </button>
+
+                      {/* Sub-categories */}
                       {selectedCategory === category && (
                         <div className="absolute top-0 left-full mt-1 ml-2 w-44 bg-white rounded-2xl shadow-2xl">
                           <ul className="py-4 text-base font-medium text-gray-700">

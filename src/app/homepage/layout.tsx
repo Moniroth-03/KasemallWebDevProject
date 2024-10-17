@@ -10,6 +10,7 @@ import { useState } from "react";
 import Link from "next/link";
 import SideBar from "@/component/SideBar";
 import MenuBar from "@/component/MenuBar";
+import React from "react";
 
 export default function Homepage({ children }: { children: React.ReactNode }) {
   return (
@@ -18,11 +19,12 @@ export default function Homepage({ children }: { children: React.ReactNode }) {
         <div className="row-span-3">
           <SideBar />
         </div>
-        <div className="col-span-2">
-          <MenuBar />
+        <div className="col-span-1">
+          <div className="z-50">
+            <MenuBar />
+          </div>
+          {children}
         </div>
-
-        <div className="row-span-2 col-span-2">{children}</div>
       </section>
     </>
   );

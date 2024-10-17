@@ -7,8 +7,9 @@ import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const handleTogglePassword = () => {
@@ -17,22 +18,18 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
-    // const loginData = {
-    //   fcm_token: "local",
-    //   phone: phone,
-    //   password: password,
-    //   device_type: "Android",
-    // };
-
+    // Construct the login data from form inputs
     const loginData = {
       fcm_token: "local",
-      phone: "1234567890", // Hardcoded phone number
-      password: "password123", // Hardcoded password
+      phone: phone,
+      password: password,
       device_type: "Android",
     };
 
     try {
+      // Send login request to API
       const response = await fetch("https://kasemall1.kasegro.com/api/login", {
         method: "POST",
         headers: {
@@ -41,27 +38,39 @@ export default function Login() {
         body: JSON.stringify(loginData),
       });
 
+      // Check if the response is ok
       if (!response.ok) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
           console.error("Login failed. Error Data:", errorData);
-          alert("Login failed: " + errorData.message);
+          alert("Login failed: " + (errorData.message || "Unknown error"));
         } else {
           const errorText = await response.text();
           console.error("Login failed. Error Text:", errorText);
           alert("Login failed: " + errorText);
         }
+        setLoading(false);
         return;
       }
 
+      // Parse the JSON response
       const data = await response.json();
       console.log("Login successful! Response data:", data);
-      alert("Login successful!");
-      router.push("/");
+
+      // Store the token (e.g., in localStorage)
+      if (data && data.data && data.data.token) {
+        localStorage.setItem("authToken", data.data.token);
+        alert("Login successful!");
+        router.push("/homepage"); // Navigate to a protected route after successful login
+      } else {
+        alert("Login failed: Token not received.");
+      }
     } catch (error) {
       console.error("Error caught in try/catch block:", error);
       alert("An error occurred during login.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -72,6 +81,7 @@ export default function Login() {
           Login Customer
         </h1>
         <form onSubmit={handleLogin} action="" className="max-w-xl mx-auto">
+          {/* Phone Input */}
           <div className="flex flex-col mb-10 relative">
             <label
               htmlFor="phone"
@@ -91,6 +101,8 @@ export default function Login() {
               />
             </div>
           </div>
+
+          {/* Password Input */}
           <div className="flex flex-col mb-10 relative">
             <label
               htmlFor="password"
@@ -122,6 +134,7 @@ export default function Login() {
               </button>
             </div>
           </div>
+
           <div className="mb-6 flex justify-between items-center">
             <div className="flex items-center">
               <input
@@ -142,23 +155,33 @@ export default function Login() {
               Forgot Password
             </a>
           </div>
+
+          {/* Loading Spinner or Login Button */}
           <button
             type="submit"
-            className="text-white bg-navBorder hover:bg-navBg focus:ring-4 focus:ring-green-100 rounded-xl w-full px-5 py-2.5 text-center mb-8"
+            className={`text-white bg-navBorder hover:bg-navBg focus:ring-4 focus:ring-green-100 rounded-xl w-full px-5 py-2.5 text-center mb-8  ${
+              loading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
+
+          {/* Additional Buttons */}
           <p className="font-medium text-gray-600 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-gray-600  after:mt-0.5 after:flex-1 after:border-t after:border-gray-600 mb-8">
             or
           </p>
+
           <button className="shadow-xl border-2 font-medium text-gray-600 flex items-center justify-center w-full border-gray-100 hover:border-l-gBlue hover:border-t-gRed hover:border-r-gYellow hover:border-b-gGreen px-5 py-2.5 rounded-xl mb-8">
             <FcGoogle className="text-2xl mr-2" />
             Continue with Google
           </button>
+
           <button className="font-medium text-gray-600 shadow-xl border-2 flex justify-center w-full border-gray-100 focus:border-l-4 hover:border-blue-700 px-5 py-2.5 rounded-xl mb-6">
             <FaFacebook className="mr-2 text-blue-700 text-2xl" />
             Continue with Facebook
           </button>
+
           <h1 className="pt-5 pb-7 font-medium text-gray-600">
             No Account yet?
           </h1>
